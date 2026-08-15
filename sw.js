@@ -1,4 +1,4 @@
-const CACHE_NAME = "word-blocks-v3";
+const CACHE_NAME = "word-blocks-v4";
 
 const APP_SHELL = [
   "./",
@@ -38,8 +38,8 @@ self.addEventListener("fetch", (event) => {
 
   const request = event.request;
 
-  // Always check for the newest app page while online.
-  // Fall back to the cached version when offline.
+  // Always check online for the latest app version.
+  // Fall back to cached index.html when offline.
   if (
     request.mode === "navigate" ||
     request.destination === "document"
@@ -61,19 +61,14 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static assets are cache-first.
+  // Static assets can remain cache-first.
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;
 
       return fetch(request).then((response) => {
-        if (!response) {
-          return response;
-        }
+        if (!response) return response;
 
-        // Cross-origin resources such as Google Fonts can return
-        // opaque responses. Return them normally, but don't rely
-        // on them for the offline app shell.
         if (response.status === 200) {
           const copy = response.clone();
 
