@@ -1,54 +1,31 @@
 🧩 Word Blocks
 
-A free, simple phonics app for parents and young children.
+A simple, levelled word generator for parents and children practising phonics and early reading.
 
-Word Blocks helps children practise sounding out and reading words through a simple, distraction-free interface designed for phones and tablets.
+Word Blocks is a lightweight reading tool designed to take the guesswork out of choosing practice words.
 
-It was created as a lightweight tool that parents can open anywhere, whether at home, on the train, in a café, or while waiting somewhere with their child.
+Choose a word length, reading level and word type, then generate words for a child to sound out with a parent, caregiver or teacher alongside them.
 
-No ads. No accounts. No tracking. No subscriptions.
+There are no scores, streaks or complicated lessons. Word Blocks simply provides words at an appropriate level so the adult can focus on helping the child read.
 
-Just words.
+Free. Open source. No ads. No accounts. No tracking.
 
 ---
 
-🚀 Try Word Blocks
+🚀 Use Word Blocks
 
 Live app:
-https://jamesparkerbrown.github.io/Test-app/
+https://jamesparkerbrown.github.io/word-blocks/
 
-Word Blocks is a Progressive Web App (PWA), so it can be installed directly onto a phone and used like a normal app.
+Word Blocks is a Progressive Web App (PWA), so it can be used directly in a browser or installed onto a phone or tablet.
 
-Once installed and loaded, it can also work offline.
-
----
-
-📱 Install on Android
-
-Open Word Blocks in Chrome.
-
-1. Open the Chrome menu.
-2. Select Install app or Install and create shortcut.
-3. Choose Install.
-4. Word Blocks will appear in your app drawer and on your home screen.
-
-On supported Android devices, Word Blocks may also display its own Install Word Blocks button.
+Once loaded, it can also work offline.
 
 ---
 
-🍎 Install on iPhone / iPad
+🧠 What Word Blocks does
 
-Open Word Blocks in Safari.
-
-1. Tap Share.
-2. Select Add to Home Screen.
-3. Tap Add.
-
-Word Blocks will then launch from the Home Screen in its own app-style window.
-
----
-
-🧠 How it works
+Word Blocks acts as a simple levelled word bank for reading practice.
 
 Choose:
 
@@ -58,47 +35,185 @@ Choose:
 
 Then tap New word.
 
-Each letter is displayed as an individual block so children can work through the word one sound at a time.
+The word is displayed as individual letter blocks, allowing the child and adult to work through it together.
 
-Difficulty levels
+The idea is simple:
+
+Pick a level → generate a word → sound it out → repeat.
+
+---
+
+👨‍👩‍👧 Designed for shared learning
+
+Word Blocks is intended to be used with a parent, caregiver, teacher or other adult nearby.
+
+It is not designed to replace teaching or independently assess a child.
+
+Instead, it gives the adult a quick supply of words appropriate to the selected level without having to continually think of new examples.
+
+This makes it useful for short reading sessions:
+
+- At home
+- On public transport
+- While travelling
+- In waiting rooms
+- At cafés
+- Before bed
+- Anywhere you have a few spare minutes
+
+---
+
+🎚️ Difficulty levels
+
+Difficulty is based primarily on how difficult a word is to decode using phonics, rather than how common or familiar the word is.
 
 Easy
-Straightforward letter-to-sound relationships intended for early decoding practice.
+
+Focuses on straightforward letter-to-sound relationships and beginner-friendly decoding.
+
+Examples may include simple short-vowel patterns such as:
+
+"cat" · "dog" · "sun" · "bed"
 
 Medium
-Introduces patterns such as consonant blends, digraphs, vowel teams and common spelling rules.
+
+Introduces additional phonics patterns such as:
+
+- consonant blends
+- digraphs
+- vowel teams
+- silent/magic-e
+- common alternative letter sounds
 
 Hard
-Introduces more difficult spelling patterns, silent letters and irregular words.
 
-The word lists are being actively reviewed to make sure difficulty reflects phonics and decoding difficulty, rather than simply how familiar a word is.
+Introduces less predictable spelling patterns such as:
 
----
+- silent initial letters
+- irregular vowel patterns
+- "gh"
+- unusual letter combinations
+- words that require more advanced decoding knowledge
 
-🎯 Project goals
-
-Word Blocks is intended to be:
-
-- Free for parents and children
-- Simple enough for young children to understand
-- Fast to open and use
-- Mobile-first
-- Available offline
-- Free from advertising
-- Free from tracking
-- Free from accounts and sign-ups
-- Open source
-- Easy for parents, teachers and developers to improve
-
-The project deliberately avoids unnecessary features that would get in the way of reading practice.
+The word lists are actively being reviewed and improved to keep these levels consistent.
 
 ---
 
-🛠️ Technology
+🔤 Real words and Sound-it-out words
 
-Word Blocks is intentionally lightweight.
+Real words
 
-It is built using:
+Words found in normal English vocabulary and grouped by reading difficulty.
+
+Sound-it-out words
+
+Generated phonetic combinations intended to practise decoding unfamiliar letter patterns.
+
+These can help a child practise actually sounding out a word rather than relying entirely on recognising words they already know.
+
+---
+
+📱 Install on Android
+
+Open Word Blocks in Chrome.
+
+1. Open the Word Blocks website.
+2. Tap Install Word Blocks if the install button appears.
+3. Alternatively, open Chrome's menu and select the install option.
+4. Confirm Install.
+
+Word Blocks will appear alongside your other apps and launch in its own window.
+
+---
+
+🍎 Install on iPhone or iPad
+
+Open Word Blocks in Safari.
+
+1. Tap Share.
+2. Select Add to Home Screen.
+3. Tap Add.
+
+Word Blocks can then be opened directly from the Home Screen.
+
+---
+
+✈️ Works offline
+
+Word Blocks is deliberately designed to remain useful without a constant internet connection.
+
+After the app has loaded and its files have been cached, it can continue generating words offline.
+
+That makes it particularly useful as an on-the-go reading tool.
+
+---
+
+🎯 Project philosophy
+
+Word Blocks is intentionally small.
+
+The goal is not to build another large educational platform.
+
+There are deliberately no:
+
+- User accounts
+- Leaderboards
+- Streaks
+- Points
+- Subscriptions
+- Advertisements
+- Tracking
+- Social features
+- In-app purchases
+
+The application has one job:
+
+Provide useful reading practice words quickly.
+
+---
+
+🌍 Free and open source
+
+Word Blocks is open source so parents, teachers and developers can inspect it, improve it and adapt it.
+
+The project aims to remain a freely available educational tool.
+
+Useful contributions could include:
+
+- Improving phonics classifications
+- Reviewing word difficulty
+- Expanding word lists
+- Accessibility improvements
+- Interface improvements
+- Additional reading levels
+- Additional languages
+- Better phonics-generation rules
+
+---
+
+🐛 Found a word at the wrong level?
+
+Word difficulty is one of the most important parts of the project.
+
+If you find a word that seems incorrectly classified, please open a GitHub Issue.
+
+Include:
+
+Word: page
+Current level: 4 letters / Easy
+Suggested level: Medium
+
+Reason:
+Uses a silent-e / long-a pattern and a soft "g", making it
+less suitable for beginner decoding practice.
+
+Corrections and suggestions from parents, teachers and people with phonics experience are particularly welcome.
+
+---
+
+🛠️ How it works
+
+Word Blocks is deliberately built using standard web technologies:
 
 - HTML
 - CSS
@@ -107,9 +222,11 @@ It is built using:
 - Service Worker
 - Progressive Web App technology
 
-There is no required backend or user account system.
+There is no required backend, database or account system.
 
-This means the entire application can remain small, fast and easy to host.
+This keeps Word Blocks:
+
+small → fast → portable → easy to maintain
 
 ---
 
@@ -129,78 +246,18 @@ word-blocks/
 
 ---
 
-🤝 Contributions
-
-Contributions are welcome.
-
-Useful contributions could include:
-
-- Reviewing phonics difficulty classifications
-- Improving word lists
-- Reporting incorrectly classified words
-- Accessibility improvements
-- UI improvements
-- Additional reading activities
-- Better offline behaviour
-- Pronunciation or audio features
-- Support for additional languages
-
-If you find a word that appears in the wrong difficulty level, please open an Issue and include:
-
-- The word
-- Current letter count
-- Current difficulty
-- Suggested difficulty
-- Reason for the change
-
-For example:
-
-Word: page
-Current: 4 letters / Easy
-Suggested: Medium
-
-Reason:
-Uses the silent-e / long-a pattern and a soft "g", making it less suitable
-for beginner decoding practice.
-
----
-
-🧒 Child-focused design
-
-Word Blocks is designed to be used by a parent or caregiver alongside a child.
-
-The app does not require children to:
-
-- Create an account
-- Enter personal information
-- View advertisements
-- Make purchases
-- Interact with other users
-
-The focus is simply on practising reading.
-
----
-
-🌍 Open source
-
-Word Blocks is open source so parents, teachers and developers can inspect it, improve it and adapt it for their own use.
-
-The long-term goal is to keep Word Blocks available as a genuinely useful free educational tool, rather than turning basic childhood learning into another subscription service.
-
----
-
 📄 Licence
 
 Word Blocks is released under the MIT License.
 
-You are free to use, modify and redistribute the project in accordance with the terms of the licence.
+You are free to use, modify and redistribute the project in accordance with the licence.
 
 ---
 
 ❤️ Why Word Blocks exists
 
-Sometimes a child doesn't need another complicated educational platform.
+Reading practice doesn't always need another lesson, game or platform.
 
-They just need a word in front of them and someone sitting beside them saying:
+Sometimes you just need an appropriate word in front of a child and someone beside them saying:
 
-"Sound it out."
+“Sound it out.”
