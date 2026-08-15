@@ -1,0 +1,40 @@
+CLEAN REBUILD INSTRUCTIONS
+
+KEEP these existing icon files in your GitHub repo:
+- apple-touch-icon.png
+- favicon-32x32.png
+- icon-192.png
+- icon-512.png
+- icon-maskable-512.png
+
+DELETE the other existing files from the repo.
+
+Then upload these files from this package to the repository root:
+- .nojekyll
+- index.html
+- manifest.webmanifest
+- sw.js
+- README.md
+- LICENSE
+
+The final repo root should contain ONLY:
+
+.nojekyll
+LICENSE
+README.md
+apple-touch-icon.png
+favicon-32x32.png
+icon-192.png
+icon-512.png
+icon-maskable-512.png
+index.html
+manifest.webmanifest
+sw.js
+
+GitHub Pages settings:
+Source: Deploy from a branch
+Branch: main
+Folder: /(root)
+
+Live app:
+https://jamesparkerbrown.github.io/word-blocks/
