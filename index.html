@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#FFF8E7">
+<meta name="application-name" content="Word Blocks">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Word Blocks">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<title>Word Blocks</title>
+<style>
+  :root{
+    --cream:#FFF8E7;
+    --ink:#2B2640;
+    --coral:#FF6B5B;
+    --sky:#3EC6E0;
+    --sun:#FFC94A;
+    --grass:#5FD69C;
+    --card:#FFFFFF;
+    --shadow: 6px 6px 0 rgba(43,38,64,0.12);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(62,198,224,0.18), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(255,107,91,0.15), transparent 45%),
+      var(--cream);
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:var(--ink);
+    overscroll-behavior:none;
+  }
+  .wrap{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    padding:22px 18px 40px;
+    display:flex;
+    flex-direction:column;
+  }
+  header{
+    text-align:center;
+    margin-bottom:18px;
+  }
+  h1{
+    font-family:"Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
+    font-weight:800;
+    font-size:2.1rem;
+    margin:0;
+    letter-spacing:0.5px;
+    color:var(--ink);
+  }
+  h1 span{color:var(--coral);}
+  .sub{
+    font-weight:700;
+    font-size:0.85rem;
+    color:#6b6580;
+    margin-top:4px;
+  }
+
+  .stage{
+    background:var(--card);
+    border-radius:24px;
+    box-shadow: var(--shadow);
+    border: 3px solid var(--ink);
+    padding:28px 16px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:120px;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .tile{
+    width:52px; height:52px;
+    background:var(--sun);
+    border:3px solid var(--ink);
+    border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:"Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
+    font-weight:800;
+    font-size:1.6rem;
+    text-transform:uppercase;
+    box-shadow: 3px 3px 0 rgba(43,38,64,0.18);
+    opacity:0;
+    transform: translateY(14px) scale(0.85);
+    animation: pop 0.38s ease forwards;
+  }
+  .tile.real{ background:var(--grass); }
+  .tile.phonetic{ background:var(--sky); }
+  @keyframes pop{
+    to{ opacity:1; transform:translateY(0) scale(1); }
+  }
+  .placeholder{
+    font-weight:700;
+    color:#b8b2c9;
+    font-size:1rem;
+  }
+
+  .controls{
+    background:var(--card);
+    border-radius:20px;
+    border:3px solid var(--ink);
+    padding:16px;
+    box-shadow: var(--shadow);
+    margin-bottom:16px;
+  }
+  .group{ margin-bottom:14px; }
+  .group:last-child{ margin-bottom:0; }
+  .label{
+    font-weight:800;
+    font-size:0.78rem;
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+    color:#6b6580;
+    margin-bottom:8px;
+    display:block;
+  }
+  .seg{
+    display:flex;
+    gap:8px;
+  }
+  .seg button{
+    flex:1;
+    padding:10px 6px;
+    border-radius:12px;
+    border:2.5px solid var(--ink);
+    background:var(--cream);
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-weight:800;
+    font-size:0.92rem;
+    color:var(--ink);
+    cursor:pointer;
+    transition: transform 0.12s ease;
+  }
+  .seg button:active{ transform: scale(0.95); }
+  .seg button.active{
+    background:var(--coral);
+    color:#fff;
+  }
+  .seg button.active.type-real{ background:var(--grass); }
+  .seg button.active.type-phon{ background:var(--sky); }
+
+  .diffDesc{
+    margin-top:8px;
+    font-size:0.78rem;
+    font-weight:700;
+    color:#6b6580;
+    line-height:1.35;
+    background:var(--cream);
+    border:2px dashed #d8d2e8;
+    border-radius:10px;
+    padding:8px 10px;
+  }
+  .diffDesc b{ color:var(--ink); }
+
+  .go{
+    width:100%;
+    padding:18px;
+    border-radius:18px;
+    border:3px solid var(--ink);
+    background:var(--coral);
+    color:#fff;
+    font-family:"Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
+    font-weight:800;
+    font-size:1.3rem;
+    letter-spacing:0.4px;
+    box-shadow: 5px 5px 0 rgba(43,38,64,0.25);
+    cursor:pointer;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .go:active{
+    transform: translate(3px,3px);
+    box-shadow: 2px 2px 0 rgba(43,38,64,0.25);
+  }
+
+
+  .install{
+    width:100%;
+    margin-top:12px;
+    padding:13px 16px;
+    border-radius:16px;
+    border:3px solid var(--ink);
+    background:var(--sky);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-weight:800;
+    font-size:1rem;
+    box-shadow: 4px 4px 0 rgba(43,38,64,0.18);
+    cursor:pointer;
+  }
+  .install:active{
+    transform: translate(2px,2px);
+    box-shadow: 2px 2px 0 rgba(43,38,64,0.18);
+  }
+
+  footer{
+    text-align:center;
+    margin-top:20px;
+    font-size:0.75rem;
+    color:#a39dbb;
+    font-weight:700;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Word<span>Blocks</span></h1>
+    <div class="sub">tap. sound it out. play again.</div>
+  </header>
+
+  <div class="stage" id="stage">
+    <div class="placeholder">tap the button below to make a word</div>
+  </div>
+
+  <div class="controls">
+    <div class="group">
+      <span class="label">Letters</span>
+      <div class="seg" id="lettersSeg">
+        <button data-val="3" class="active">3</button>
+        <button data-val="4">4</button>
+        <button data-val="5">5</button>
+      </div>
+    </div>
+    <div class="group">
+      <span class="label">Word type</span>
+      <div class="seg" id="typeSeg">
+        <button data-val="real" class="active type-real">Real words</button>
+        <button data-val="phonetic" class="type-phon">Sound-it-out</button>
+      </div>
+    </div>
+    <div class="group">
+      <span class="label">Difficulty</span>
+      <div class="seg" id="diffSeg">
+        <button data-val="easy" class="active">Easy</button>
+        <button data-val="medium">Medium</button>
+        <button data-val="hard">Hard</button>
+      </div>
+      <div class="diffDesc" id="diffDesc"></div>
+    </div>
+  </div>
+
+  <button class="go" id="goBtn">🎲 New word</button>
+  <button class="install" id="installBtn" hidden>⬇ Install Word Blocks</button>
+  <footer id="appFooter">Works offline</footer>
+</div>
+
+<script>
+// ---------------------------------------------------------------------
+// Word data (same lists as the Python API version, ported to JS)
+// ---------------------------------------------------------------------
+const REAL_WORDS = {
+  3: {
+    easy: ["bag", "bat", "bed", "big", "bit", "box", "bun", "bus", "can", "cap", "car", "cat", "cot", "cub", "cup", "cut", "dad", "dig", "dip", "dog", "dot", "dye", "egg", "ewe", "eye", "fan", "fat", "few", "fey", "fig", "fin", "fit", "fix", "fog", "fun", "gap", "gas", "gum", "guy", "ham", "hat", "hen", "hid", "him", "hip", "hit", "hog", "hop", "hot", "hug", "hum", "hut", "ice", "ill", "ink", "jam", "jar", "jet", "job", "jog", "jot", "jug", "key", "kid", "kit", "lap", "leg", "lid", "lip", "log", "lye", "mad", "man", "map", "mat", "mix", "mob", "mom", "mop", "mud", "nap", "net", "new", "nod", "nut", "nye", "odd", "one", "pad", "pan", "pat", "pen", "pet", "pig", "pin", "pit", "pod", "pop", "pot", "pug", "pup", "rag", "ram", "rat", "red", "rib", "rid", "rim", "rip", "rob", "rod", "rub", "rug", "run", "rye", "sad", "sap", "set", "sip", "sir", "sit", "six", "sob", "sod", "son", "sub", "sun", "tag", "tan", "tap", "tar", "tax", "ten", "tin", "tip", "top", "tot", "tub", "tug", "van", "vat", "vet", "wag", "wax", "web", "wed", "wet", "wig", "win", "wit", "won", "yak", "yam", "yes", "yet", "zap", "zip"],
+    medium: ["awe", "aye", "bee", "boy", "chi", "cow", "cry", "dry", "ear", "eat", "fly", "gym", "hay", "jaw", "joy", "law", "low", "oak", "oil", "out", "owl", "paw", "pea", "ply", "raw", "row", "saw", "sea", "she", "shy", "sky", "sow", "spa", "spy", "sty", "sue", "tea", "the", "tho", "tie", "toe", "toy", "try", "two", "way", "who", "why", "zoo"],
+    hard: ["gnu", "wry"],
+  },
+  4: {
+    easy: ["band", "bark", "barn", "bell", "bike", "bird", "bulb", "bump", "burn", "cake", "cave", "cent", "cold", "come", "corn", "cure", "cute", "dark", "dart", "debt", "dime", "dine", "dive", "dock", "dome", "done", "duck", "dwell", "dyed", "exit", "face", "fact", "fade", "fake", "fall", "farm", "fate", "fern", "file", "fill", "film", "find", "fine", "fire", "five", "fold", "folk", "fond", "form", "fort", "full", "fund", "fuse", "gale", "game", "gate", "gaze", "germ", "gift", "girl", "give", "gold", "gone", "gulf", "gulp", "half", "hall", "halt", "hand", "harm", "haze", "help", "herd", "here", "hero", "hide", "hike", "hill", "hint", "hire", "hive", "hold", "hole", "holy", "home", "hope", "horn", "hose", "hunt", "hurt", "idle", "into", "iris", "iron", "jade", "jazz", "joke", "jolt", "july", "jump", "june", "jury", "kept", "kick", "kind", "king", "kite", "kiwi", "lace", "lack", "lady", "lake", "lamp", "land", "lane", "lark", "late", "lazy", "left", "lend", "lens", "less", "lick", "life", "lift", "like", "lily", "lime", "line", "link", "lion", "live", "lock", "loft", "logo", "lone", "long", "lord", "lore", "lose", "love", "luck", "lump", "lung", "made", "make", "mall", "many", "mark", "mate", "melt", "mend", "menu", "mice", "mild", "mile", "milk", "mind", "mine", "mint", "miss", "mode", "mold", "monk", "moss", "name", "navy", "neck", "news", "next", "nice", "nine", "node", "none", "norm", "nose", "note", "nova", "nuts", "oven", "pack", "page", "pale", "palm", "park", "part", "pass", "pick", "pile", "pill", "pine", "pink", "pint", "pipe", "poke", "pole", "pond", "pony", "pork", "port", "pose", "pull", "pulp", "pump", "punt", "race", "rack", "raft", "rage", "rake", "rank", "rare", "rate", "rice", "ride", "rift", "ring", "rink", "riot", "ripe", "rise", "robe", "rock", "rode", "role", "roll", "rope", "rose", "rosy", "rude", "rule", "safe", "salt", "same", "sand", "sang", "sank", "save", "scale", "scarf", "scent", "self", "sell", "send", "sent", "sick", "side", "sift", "silk", "sing", "sink", "site", "size", "sock", "soda", "sofa", "soft", "sold", "sole", "some", "song", "sore", "sort", "sung", "sure", "surf", "tack", "take", "tale", "talk", "tall", "tame", "tank", "tape", "tell", "tend", "tent", "term", "text", "tide", "tile", "time", "tiny", "tire", "toll", "tone", "tore", "torn", "tube", "tune", "turf", "turn", "unit", "upon", "urge", "used", "user", "vase", "veil", "vein", "verb", "very", "vine", "visa", "volt", "wage", "wake", "walk", "wall", "want", "ward", "warm", "warn", "wart", "wave", "well", "went", "wept", "were", "wide", "wife", "wild", "will", "wind", "wine", "wing", "wink", "wipe", "wire", "wise", "wolf", "word", "wore", "work", "worm", "worn", "yard", "yarn", "yell", "yolk", "zero", "zone"],
+    medium: ["aisle", "bath", "beak", "beam", "bean", "beef", "been", "best", "boat", "book", "boot", "brick", "bring", "brush", "bush", "cast", "chalk", "chest", "chick", "chin", "chip", "chop", "chunk", "clap", "clash", "clean", "cliff", "cling", "clip", "cloth", "cloud", "club", "coal", "coat", "cook", "cool", "crab", "crack", "cramp", "crash", "crawl", "crib", "crop", "cross", "crowd", "crown", "crush", "dawn", "depth", "desk", "dish", "door", "doubt", "drift", "drink", "drown", "drum", "dust", "east", "easy", "fail", "fair", "fast", "fear", "feed", "feel", "fish", "fist", "flag", "flash", "flat", "fling", "flip", "flop", "food", "fool", "foot", "four", "free", "fresh", "fried", "frog", "frost", "fuel", "gain", "gear", "glare", "glass", "gleam", "glide", "gloom", "glow", "goal", "goat", "good", "graph", "grasp", "grass", "greed", "green", "greet", "grill", "grin", "grind", "grip", "groom", "group", "growl", "grown", "gust", "hail", "hair", "hawk", "heal", "heap", "heat", "heel", "hood", "hook", "hoop", "host", "hour", "hymn", "idea", "inch", "itch", "jeep", "just", "keen", "keep", "last", "lawn", "lead", "leaf", "leak", "lean", "leap", "list", "load", "loaf", "loan", "look", "loop", "loud", "mail", "main", "mask", "mast", "meal", "mean", "meat", "meet", "mesh", "mist", "mood", "moon", "most", "much", "must", "myth", "nail", "near", "neat", "need", "nest", "noon", "oath", "pain", "pair", "past", "path", "peak", "peel", "peer", "perch", "pest", "phase", "photo", "pier", "pinch", "plan", "play", "plea", "plot", "plow", "plug", "plum", "plus", "poem", "pool", "poor", "porch", "post", "pouch", "pour", "proud", "pterodactyl", "punch", "push", "quest", "quiz", "rail", "rain", "ranch", "raw", "reach", "read", "real", "reef", "rest", "rich", "risk", "road", "roam", "roar", "roof", "room", "root", "rush", "rust", "sail", "scoop", "scrub", "seal", "seam", "seat", "seed", "seek", "seem", "seen", "shack", "shade", "shake", "shame", "shape", "share", "shark", "sharp", "shave", "shawl", "shed", "sheen", "sheep", "sheet", "shelf", "shift", "shine", "ship", "shirt", "shock", "shoot", "shop", "shore", "short", "shot", "shout", "shove", "shown", "shrug", "shut", "skate", "skin", "skip", "skirt", "skull", "slam", "slap", "slate", "sleek", "sleep", "sleet", "slice", "slid", "slide", "slim", "slime", "sling", "slip", "slope", "slot", "slow", "smart", "smash", "smell", "smile", "smoke", "snack", "snail", "snap", "sneak", "sniff", "snow", "soak", "soap", "soil", "soon", "soul", "soup", "sour", "spare", "spark", "speak", "speed", "spell", "spend", "spent", "spike", "spill", "spin", "spine", "split", "spoil", "spoke", "spoon", "sport", "spot", "spout", "spray", "spree", "spun", "spurt", "squad", "stack", "staff", "stag", "stage", "stalk", "stall", "stamp", "stand", "stank", "star", "stare", "stark", "start", "state", "stay", "steal", "steam", "steel", "steep", "steer", "stem", "step", "stew", "stick", "stiff", "still", "sting", "stir", "stock", "stomp", "stone", "stood", "stool", "stop", "store", "storm", "stout", "stove", "strap", "straw", "strip", "strum", "study", "stuff", "stump", "stung", "stunt", "such", "suit", "swamp", "swan", "sway", "swept", "swift", "swim", "swing", "swirl", "swoop", "sword", "tail", "task", "teach", "team", "tear", "test", "than", "thank", "that", "theft", "them", "theme", "then", "thick", "thief", "thing", "think", "third", "this", "thorn", "those", "three", "threw", "throb", "throw", "thump", "toad", "took", "tool", "tooth", "torch", "touch", "tour", "tract", "trade", "trail", "train", "trait", "tram", "trap", "trash", "tray", "tread", "treat", "tree", "trend", "trial", "tribe", "trick", "tried", "trim", "trip", "truck", "true", "trunk", "trust", "twin", "twist", "type", "vain", "vast", "vest", "void", "wait", "wash", "wasp", "weak", "wear", "weed", "week", "weep", "west", "wharf", "what", "wheat", "wheel", "when", "which", "whine", "whip", "whirl", "white", "whole", "whose", "wish", "with", "wood", "wool", "yacht", "year", "zoom"],
+    hard: ["bright", "climb", "comb", "crumb", "edge", "eight", "fight", "flight", "freight", "fright", "ghost", "gnarl", "gnash", "gnaw", "gnome", "gnu", "height", "high", "knack", "knead", "knee", "kneel", "knelt", "knife", "knight", "knock", "knoll", "knot", "known", "lamb", "light", "limb", "might", "neigh", "night", "numb", "plight", "psalm", "pseudo", "reign", "right", "sight", "sign", "sleigh", "slight", "thumb", "tight", "tomb", "weigh", "weight", "womb", "wrap", "wreck", "wring", "wrist", "wrong", "wrote"],
+  },
+  5: {
+    easy: ["baker", "basil", "basin", "cabin", "camel", "cargo", "carve", "civic", "comic", "cover", "curve", "dance", "debt", "diary", "dozen", "dwell", "enter", "erase", "event", "every", "exact", "false", "final", "focus", "force", "forge", "forum", "giant", "guard", "habit", "honey", "horse", "hotel", "human", "image", "inbox", "index", "inner", "input", "joker", "juror", "label", "labor", "lance", "large", "laser", "later", "lemon", "level", "limit", "logic", "lunar", "magic", "major", "medal", "media", "melon", "merit", "metal", "meter", "minor", "minus", "mixer", "model", "moral", "motor", "music", "never", "novel", "nurse", "obese", "occur", "offer", "onion", "opera", "order", "oxide", "panel", "panic", "paper", "pedal", "piano", "pilot", "pizza", "polar", "pupil", "rabbit", "radar", "radio", "range", "rapid", "ratio", "rebel", "refer", "relax", "reset", "rider", "rigid", "rival", "river", "robot", "ruler", "rumor", "rural", "salad", "scale", "scare", "scarf", "scary", "scene", "scent", "serve", "seven", "since", "solar", "solid", "solve", "sugar", "super", "surge", "tempo", "tense", "tiger", "timer", "tired", "token", "tonal", "topic", "total", "toxic", "tulip", "tumor", "tunic", "under", "union", "unite", "upper", "urban", "usage", "usual", "valid", "vapor", "vegan", "verse", "video", "viral", "virus", "vital", "vivid", "vocal", "wagon", "wanna", "water", "weird", "widen", "women", "worse", "woven"],
+    medium: ["aisle", "apple", "aunty", "beach", "beard", "beast", "below", "bench", "berry", "birth", "black", "blade", "blame", "blank", "blast", "blaze", "bleed", "blend", "bless", "blind", "block", "blood", "bloom", "board", "boast", "brain", "brave", "bread", "break", "breed", "brick", "bride", "brief", "bring", "broad", "broke", "brown", "brush", "build", "built", "bunch", "burst", "candy", "catch", "cause", "chair", "chalk", "charm", "chase", "cheap", "check", "cheek", "cheer", "chess", "chest", "chick", "chief", "child", "chill", "chore", "chunk", "clash", "class", "clean", "clerk", "cliff", "cling", "clock", "close", "cloth", "cloud", "clown", "coach", "coast", "couch", "could", "count", "court", "crack", "craft", "cramp", "crash", "crawl", "cream", "crest", "cried", "crisp", "crook", "cross", "crowd", "crown", "crush", "daily", "dairy", "daisy", "death", "delay", "depth", "dirty", "doubt", "draft", "drain", "drama", "drank", "dream", "dress", "dried", "drift", "drink", "drive", "drop", "drove", "drown", "eager", "eagle", "early", "earth", "empty", "enjoy", "equal", "exist", "fable", "faith", "fancy", "field", "fifth", "fifty", "first", "flame", "flash", "fleet", "flesh", "fling", "float", "flock", "flood", "floor", "flour", "fluid", "flush", "forth", "forty", "found", "frame", "fresh", "fried", "fries", "front", "frost", "fruit", "funny", "gauge", "gauze", "glare", "glass", "gleam", "glide", "globe", "gloom", "glory", "glove", "grace", "grade", "grand", "graph", "grasp", "grass", "great", "greed", "green", "greet", "grief", "grill", "grind", "group", "grove", "growl", "grown", "guess", "guest", "guide", "hairy", "happy", "hardy", "harsh", "haste", "hatch", "hobby", "house", "hunch", "hurry", "ideal", "issue", "jelly", "joint", "jolly", "juice", "kayak", "layer", "learn", "least", "leave", "loose", "lower", "loyal", "lucky", "lunch", "lyric", "maple", "march", "match", "mayor", "meant", "mercy", "month", "mount", "mouse", "mouth", "movie", "nasty", "newly", "niece", "noble", "noise", "north", "nylon", "ocean", "other", "outer", "owner", "paint", "party", "pause", "peace", "peach", "pearl", "penny", "phase", "photo", "piece", "pinch", "pitch", "place", "plain", "plane", "plant", "plate", "point", "poise", "porch", "pouch", "pound", "power", "press", "price", "pride", "prime", "print", "prior", "prize", "proof", "proud", "prove", "punch", "quaint", "quart", "queen", "query", "quest", "quick", "quiet", "quilt", "quite", "raise", "rally", "ranch", "reach", "react", "ready", "realm", "relay", "reply", "retro", "roast", "rocky", "round", "route", "royal", "rugby", "sauce", "scoop", "scout", "screw", "scrub", "seed", "shack", "shade", "shake", "shall", "shame", "shape", "share", "shark", "sharp", "shave", "shawl", "sheen", "sheep", "sheet", "shelf", "shift", "shine", "shirt", "shock", "shoot", "shore", "short", "shout", "shove", "shown", "shrug", "siege", "silly", "sixty", "skate", "skirt", "skull", "slate", "sleek", "sleep", "sleet", "slice", "slide", "slime", "sling", "slope", "small", "smart", "smash", "smell", "smile", "smoke", "snack", "snail", "sneak", "sorry", "sound", "south", "space", "spare", "spark", "speak", "speed", "spell", "spend", "spent", "spike", "spill", "spine", "spirit", "split", "spoil", "spoke", "spoon", "sport", "spout", "spray", "spree", "spurt", "squad", "stack", "staff", "stage", "stain", "stair", "stake", "stale", "stalk", "stall", "stamp", "stand", "stare", "stark", "start", "state", "stay", "steak", "steal", "steam", "steel", "steep", "steer", "stick", "stiff", "still", "sting", "stock", "stone", "stood", "stool", "store", "storm", "story", "stout", "stove", "strap", "straw", "strip", "strum", "study", "stuff", "stump", "style", "suite", "sunny", "swamp", "swap", "swear", "sweat", "sweep", "sweet", "swept", "swift", "swing", "swirl", "swoop", "sword", "table", "taste", "teach", "tease", "tenth", "thank", "theft", "theme", "thick", "thief", "thing", "think", "third", "thorn", "those", "three", "threw", "throb", "throw", "thump", "toast", "today", "torch", "touch", "tower", "trace", "track", "trade", "trail", "train", "trait", "trash", "tread", "treat", "trend", "trial", "tribe", "trick", "tried", "tries", "truck", "trunk", "trust", "truth", "twist", "untie", "value", "vault", "venue", "voice", "vowel", "waist", "waltz", "watch", "weary", "weave", "whale", "wheat", "wheel", "which", "while", "whine", "whirl", "white", "whole", "whose", "width", "witch", "world", "worry", "worst", "worth", "would", "wound", "yacht", "yield", "young", "youth"],
+    hard: ["bright", "climb", "comb", "cough", "crumb", "dough", "eight", "enough", "fight", "flight", "freight", "fright", "fudge", "ghost", "gnarl", "gnash", "gnome", "height", "jumbo", "knead", "kneel", "knife", "knight", "knock", "knoll", "known", "lamb", "laugh", "light", "limb", "lodge", "might", "neigh", "night", "numb", "plight", "plough", "psalm", "reign", "rhyme", "ridge", "right", "rough", "sight", "sleigh", "slight", "though", "through", "thumb", "tight", "tomb", "tough", "upset", "wedge", "weigh", "weight", "womb", "wreck", "wring", "wrist", "write", "wrong", "wrote"],
+  },
+};
+
+const VOWELS = ["a","e","i","o","u"];
+const SIMPLE_CONSONANTS = "bcdfghjklmnprstvw".split("");
+const BLENDS = ["bl","br","cl","cr","dr","fl","fr","gl","gr","pl","pr","sk","sl","sm","sn","sp","st","sw","tr","tw"];
+const DIGRAPHS = ["ch","sh","th","wh","ph"];
+const TRICKY_CONSONANTS = "bcdfghjklmnpqrstvwxyz".split("");
+
+const DIFFICULTY_CONFIG = {
+  easy:   { start: SIMPLE_CONSONANTS, end: SIMPLE_CONSONANTS },
+  medium: { start: SIMPLE_CONSONANTS.concat(DIGRAPHS), end: SIMPLE_CONSONANTS },
+  hard:   { start: TRICKY_CONSONANTS.concat(BLENDS, DIGRAPHS), end: TRICKY_CONSONANTS.concat(BLENDS) }
+};
+
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function buildPhoneticWord(targetLength, difficulty){
+  const cfg = DIFFICULTY_CONFIG[difficulty];
+  for(let attempt=0; attempt<200; attempt++){
+    let pieces = [];
+    let consonantTurn = true;
+    let len = 0;
+    while(len < targetLength){
+      let chunk;
+      if(consonantTurn){
+        chunk = pick(pieces.length === 0 ? cfg.start : cfg.end);
+      } else {
+        chunk = pick(VOWELS);
+      }
+      pieces.push(chunk);
+      len += chunk.length;
+      consonantTurn = !consonantTurn;
+    }
+    const word = pieces.join("");
+    if(word.length === targetLength) return word;
+  }
+  // fallback trim/pad
+  let word = pieces_fallback();
+  return word;
+  function pieces_fallback(){
+    let w = "";
+    while(w.length < targetLength) w += pick(VOWELS);
+    return w.slice(0, targetLength);
+  }
+}
+
+function generateWord(letters, type, difficulty){
+  if(type === "real"){
+    const pool = REAL_WORDS[letters][difficulty];
+    return pick(pool);
+  }
+  return buildPhoneticWord(letters, difficulty);
+}
+
+// ---------------------------------------------------------------------
+// UI wiring
+// ---------------------------------------------------------------------
+let state = { letters: 3, type: "real", difficulty: "easy" };
+
+const DIFFICULTY_RULES = {
+  3: {
+    easy: "<b>Easy:</b> the most basic pattern — one consonant, one vowel, one consonant (CVC), nothing else.",
+    medium: "<b>Medium:</b> a blend or long-vowel sound squeezed into just 3 letters — a starting blend (fl, sp, sk) or a vowel pair (ee, oa, oy).",
+    hard: "<b>Hard:</b> true 3-letter tricky words are rare in English — just a couple of silent-letter oddities (gn, wr)."
+  },
+  4: {
+    easy: "<b>Easy:</b> still simple sounds, just one letter longer — usually an extra ending consonant, no blends or letter teams yet.",
+    medium: "<b>Medium:</b> a consonant blend or digraph (bl, st, ch, sh) at the start or end, or a vowel pair (ee, oo, ai) in the middle.",
+    hard: "<b>Hard:</b> silent letters (kn, wr, mb, gh) and irregular spelling patterns (igh, eigh) that don't sound like they're written."
+  },
+  5: {
+    easy: "<b>Easy:</b> longer, often two syllables, but each part still uses simple single consonants and vowels — no blends.",
+    medium: "<b>Medium:</b> the same blends and digraphs as shorter words (bl, sh, ch), plus vowel teams (ee, ui, ai), just stretched across 5 letters.",
+    hard: "<b>Hard:</b> silent letters and irregular vowel patterns carried into longer words — trickiest tier overall."
+  }
+};
+
+const diffDescEl = document.getElementById("diffDesc");
+
+function getExamples(letters, type, difficulty, n){
+  const examples = new Set();
+  let attempts = 0;
+  while(examples.size < n && attempts < 50){
+    examples.add(generateWord(letters, type, difficulty));
+    attempts++;
+  }
+  return [...examples];
+}
+
+function updateDiffDesc(){
+  const letters = parseInt(state.letters, 10);
+  const examples = getExamples(letters, state.type, state.difficulty, 3);
+  diffDescEl.innerHTML = DIFFICULTY_RULES[letters][state.difficulty] +
+    " <i>e.g. " + examples.join(", ") + "</i>";
+}
+
+function wireSeg(id, key, extraClassMap){
+  const seg = document.getElementById(id);
+  seg.querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      seg.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      state[key] = btn.dataset.val;
+      updateDiffDesc();
+    });
+  });
+}
+wireSeg("lettersSeg","letters");
+wireSeg("typeSeg","type");
+wireSeg("diffSeg","difficulty");
+updateDiffDesc();
+
+const stage = document.getElementById("stage");
+
+function renderWord(word, type){
+  stage.innerHTML = "";
+  [...word].forEach((letter, i)=>{
+    const tile = document.createElement("div");
+    tile.className = "tile " + (type === "real" ? "real" : "phonetic");
+    tile.textContent = letter;
+    tile.style.animationDelay = (i*0.06)+"s";
+    stage.appendChild(tile);
+  });
+}
+
+document.getElementById("goBtn").addEventListener("click", ()=>{
+  const letters = parseInt(state.letters, 10);
+  const word = generateWord(letters, state.type, state.difficulty);
+  renderWord(word, state.type);
+});
+</script>
+<script>
+  // PWA install button (shown by supported Android browsers when install is available)
+  let deferredInstallPrompt = null;
+  const installBtn = document.getElementById("installBtn");
+  const appFooter = document.getElementById("appFooter");
+
+  function isStandalone(){
+    return window.matchMedia("(display-mode: standalone)").matches ||
+           window.navigator.standalone === true;
+  }
+
+  if (isStandalone()) {
+    appFooter.textContent = "Works offline";
+  }
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    installBtn.hidden = false;
+    appFooter.textContent = "Works offline · installable";
+  });
+
+  installBtn.addEventListener("click", async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    installBtn.hidden = true;
+  });
+
+  window.addEventListener("appinstalled", () => {
+    deferredInstallPrompt = null;
+    installBtn.hidden = true;
+    appFooter.textContent = "Works offline";
+  });
+
+  // Register the offline service worker.
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch((err) => {
+        console.error("Service worker registration failed:", err);
+      });
+    });
+  }
+</script>
+</body>
+</html>
