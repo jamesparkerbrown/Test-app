@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Word Blocks</title>
+
+<!-- iOS home-screen app behaviour: opens full-screen with no Safari chrome
+     when added via Share > Add to Home Screen -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WordBlocks">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#FF6B5B">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFF8E7;
+    --ink:#2B2640;
+    --coral:#FF6B5B;
+    --sky:#3EC6E0;
+    --sun:#FFC94A;
+    --grass:#5FD69C;
+    --card:#FFFFFF;
+    --shadow: 6px 6px 0 rgba(43,38,64,0.12);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(62,198,224,0.18), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(255,107,91,0.15), transparent 45%),
+      var(--cream);
+    font-family:'Nunito', sans-serif;
+    color:var(--ink);
+    overscroll-behavior:none;
+  }
+  .wrap{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    padding:calc(22px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left));
+    display:flex;
+    flex-direction:column;
+  }
+  header{
+    text-align:center;
+    margin-bottom:18px;
+  }
+  h1{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size:2.1rem;
+    margin:0;
+    letter-spacing:0.5px;
+    color:var(--ink);
+  }
+  h1 span{color:var(--coral);}
+  .sub{
+    font-weight:700;
+    font-size:0.85rem;
+    color:#6b6580;
+    margin-top:4px;
+  }
+
+  .stage{
+    background:var(--card);
+    border-radius:24px;
+    box-shadow: var(--shadow);
+    border: 3px solid var(--ink);
+    padding:28px 16px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:120px;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .tile{
+    width:52px; height:52px;
+    background:var(--sun);
+    border:3px solid var(--ink);
+    border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size:1.6rem;
+    text-transform:uppercase;
+    box-shadow: 3px 3px 0 rgba(43,38,64,0.18);
+    opacity:0;
+    transform: translateY(14px) scale(0.85);
+    animation: pop 0.38s ease forwards;
+  }
+  .tile.real{ background:var(--grass); }
+  .tile.phonetic{ background:var(--sky); }
+  @keyframes pop{
+    to{ opacity:1; transform:translateY(0) scale(1); }
+  }
+  .placeholder{
+    font-weight:700;
+    color:#b8b2c9;
+    font-size:1rem;
+  }
+
+  .controls{
+    background:var(--card);
+    border-radius:20px;
+    border:3px solid var(--ink);
+    padding:16px;
+    box-shadow: var(--shadow);
+    margin-bottom:16px;
+  }
+  .group{ margin-bottom:14px; }
+  .group:last-child{ margin-bottom:0; }
+  .label{
+    font-weight:800;
+    font-size:0.78rem;
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+    color:#6b6580;
+    margin-bottom:8px;
+    display:block;
+  }
+  .seg{
+    display:flex;
+    gap:8px;
+  }
+  .seg button{
+    flex:1;
+    padding:10px 6px;
+    border-radius:12px;
+    border:2.5px solid var(--ink);
+    background:var(--cream);
+    font-family:'Nunito', sans-serif;
+    font-weight:800;
+    font-size:0.92rem;
+    color:var(--ink);
+    cursor:pointer;
+    transition: transform 0.12s ease;
+  }
+  .seg button:active{ transform: scale(0.95); }
+  .seg button.active{
+    background:var(--coral);
+    color:#fff;
+  }
+  .seg button.active.type-real{ background:var(--grass); }
+  .seg button.active.type-phon{ background:var(--sky); }
+
+  .diffDesc{
+    margin-top:8px;
+    font-size:0.78rem;
+    font-weight:700;
+    color:#6b6580;
+    line-height:1.35;
+    background:var(--cream);
+    border:2px dashed #d8d2e8;
+    border-radius:10px;
+    padding:8px 10px;
+  }
+  .diffDesc b{ color:var(--ink); }
+
+  .go{
+    width:100%;
+    padding:18px;
+    border-radius:18px;
+    border:3px solid var(--ink);
+    background:var(--coral);
+    color:#fff;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size:1.3rem;
+    letter-spacing:0.4px;
+    box-shadow: 5px 5px 0 rgba(43,38,64,0.25);
+    cursor:pointer;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .go:active{
+    transform: translate(3px,3px);
+    box-shadow: 2px 2px 0 rgba(43,38,64,0.25);
+  }
+
+
+  .installBtn{
+    width:100%;
+    margin-top:12px;
+    padding:13px 16px;
+    border-radius:16px;
+    border:3px solid var(--ink);
+    background:var(--sky);
+    color:var(--ink);
+    font-family:'Nunito', sans-serif;
+    font-weight:800;
+    font-size:1rem;
+    box-shadow: 4px 4px 0 rgba(43,38,64,0.18);
+    cursor:pointer;
+  }
+  .installBtn:active{
+    transform: translate(2px,2px);
+    box-shadow: 2px 2px 0 rgba(43,38,64,0.18);
+  }
+
+  .footerRow{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin-top:20px;
+  }
+  footer{
+    text-align:center;
+    font-size:0.75rem;
+    color:#a39dbb;
+    font-weight:700;
+  }
+  .flagToggle{
+    width:30px; height:30px;
+    border-radius:50%;
+    border:2px solid var(--ink);
+    background:var(--card);
+    font-size:1rem;
+    line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    padding:0;
+    box-shadow: 2px 2px 0 rgba(43,38,64,0.15);
+    flex-shrink:0;
+  }
+  .flagToggle:active{ transform: scale(0.9); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Word<span>Blocks</span></h1>
+    <div class="sub">tap. sound it out. play again.</div>
+  </header>
+
+  <div class="stage" id="stage">
+    <div class="placeholder">tap the button below to make a word</div>
+  </div>
+
+  <div class="controls">
+    <div class="group">
+      <span class="label">Letters</span>
+      <div class="seg" id="lettersSeg">
+        <button data-val="3" class="active">3</button>
+        <button data-val="4">4</button>
+        <button data-val="5">5</button>
+      </div>
+    </div>
+    <div class="group">
+      <span class="label">Word type</span>
+      <div class="seg" id="typeSeg">
+        <button data-val="real" class="active type-real">Real words</button>
+        <button data-val="phonetic" class="type-phon">Sound-it-out</button>
+      </div>
+    </div>
+    <div class="group">
+      <span class="label">Difficulty</span>
+      <div class="seg" id="diffSeg">
+        <button data-val="easy" class="active">Easy</button>
+        <button data-val="medium">Medium</button>
+        <button data-val="hard">Hard</button>
+      </div>
+      <div class="diffDesc" id="diffDesc"></div>
+    </div>
+  </div>
+
+  <button class="go" id="goBtn">🎲 New word</button>
+  <button class="installBtn" id="installBtn" hidden>⬇ Install Word Blocks</button>
+  <div class="footerRow">
+    <footer id="appFooter">Works offline · add me to your home screen</footer>
+    <button id="variantToggle" class="flagToggle" title="Switch English spelling"></button>
+  </div>
+</div>
+
+<script>
+// ---------------------------------------------------------------------
+// 1) WORD DATA
+//    BASE_WORDS: shared, region-neutral dictionary.
+//    REGIONAL_WORDS: overlay for the small set of words whose spelling
+//    (and sometimes letter-count) differs between UK/AU and US English.
+//    Shared words stay in one place; only true differences are duplicated.
+// ---------------------------------------------------------------------
+const BASE_WORDS = {
+  3: {
+    easy: ["bag", "bat", "bed", "big", "bit", "box", "bun", "bus", "can", "cap", "car", "cat", "cot", "cub", "cup", "cut", "dad", "dig", "dip", "dog", "dot", "egg", "fan", "fat", "fig", "fin", "fit", "fix", "fog", "fun", "gap", "gas", "gum", "ham", "hat", "hen", "hid", "him", "hip", "hit", "hog", "hop", "hot", "hug", "hum", "hut", "ill", "ink", "jam", "jar", "jet", "job", "jog", "jot", "jug", "kid", "kit", "lap", "leg", "lid", "lip", "log", "mad", "man", "map", "mat", "mix", "mob", "mop", "mud", "nap", "net", "nod", "nut", "odd", "pad", "pan", "pat", "pen", "pet", "pig", "pin", "pit", "pod", "pop", "pot", "pug", "pup", "rag", "ram", "rat", "red", "rib", "rid", "rim", "rip", "rob", "rod", "rub", "rug", "run", "sad", "sap", "set", "sip", "sit", "six", "sob", "sod", "sub", "sun", "tag", "tan", "tap", "tar", "tax", "ten", "tin", "tip", "top", "tot", "tub", "tug", "van", "vat", "vet", "wag", "wax", "web", "wed", "wet", "wig", "win", "wit", "yak", "yam", "zap", "zip"],
+    medium: ["bee", "boy", "cow", "cry", "dry", "ear", "eat", "fly", "gym", "hay", "jaw", "joy", "law", "low", "oak", "oil", "out", "owl", "paw", "pea", "ply", "raw", "saw", "sea", "she", "shy", "sky", "spa", "spy", "sty", "sue", "tea", "tie", "toe", "toy", "try", "way", "why", "yes", "yet", "zoo", "sir", "few", "new", "key", "ice", "dye", "rye", "lye", "guy"],
+    hard: ["ewe", "eye", "fey", "gnu", "one", "two", "who", "wry", "son", "won", "the", "awe", "aye"],
+  },
+  4: {
+    easy: ["band", "bark", "barn", "bell", "bird", "bulb", "bump", "burn", "cold", "corn", "dark", "dart", "dock", "duck", "exit", "fact", "fall", "farm", "fern", "fill", "film", "find", "fold", "folk", "fond", "form", "fort", "full", "fund", "gift", "girl", "gold", "gulf", "gulp", "hall", "halt", "hand", "harm", "help", "herd", "hero", "hill", "hint", "hold", "holy", "horn", "hunt", "hurt", "idle", "into", "iris", "iron", "jazz", "jolt", "july", "jump", "jury", "kept", "kick", "kind", "king", "kiwi", "lack", "lady", "lamp", "land", "lark", "lazy", "left", "lend", "lens", "less", "lick", "lift", "lily", "link", "lion", "lock", "loft", "logo", "long", "lord", "luck", "lump", "lung", "mall", "many", "mark", "melt", "mend", "menu", "mild", "milk", "mind", "mint", "miss", "monk", "moss", "navy", "neck", "next", "norm", "nova", "nuts", "oven", "pack", "park", "part", "pass", "pick", "pill", "pink", "pint", "pond", "pony", "pork", "port", "pull", "pulp", "pump", "punt", "rack", "raft", "rank", "rift", "ring", "rink", "riot", "rock", "roll", "rosy", "salt", "sand", "sang", "sank", "self", "sell", "send", "sent", "sick", "sift", "silk", "sing", "sink", "sock", "soda", "sofa", "soft", "sold", "song", "sort", "sung", "surf", "tack", "tall", "tank", "tell", "tend", "tent", "term", "text", "tiny", "toll", "torn", "turf", "turn", "unit", "upon", "used", "user", "verb", "very", "visa", "volt", "wall", "want", "ward", "warm", "warn", "wart", "well", "went", "wept", "wild", "will", "wing", "wink", "wolf", "word", "work", "worm", "worn", "yard", "yarn", "yolk", "zero"],
+    medium: ["bath", "beak", "beam", "bean", "beef", "been", "best", "bike", "boat", "book", "boot", "bush", "cake", "cast", "cave", "chin", "chip", "chop", "clap", "clip", "club", "coal", "coat", "cook", "cool", "crab", "crib", "crop", "cure", "cute", "dawn", "desk", "dime", "dine", "dish", "dive", "dome", "door", "drop", "drum", "dust", "dyed", "east", "easy", "face", "fade", "fail", "fair", "fake", "fast", "fate", "fear", "feed", "feel", "file", "fine", "fire", "fish", "fist", "five", "flag", "flat", "flip", "flop", "food", "fool", "foot", "four", "free", "frog", "fuel", "fuse", "gain", "gale", "game", "gate", "gaze", "gear", "glow", "goal", "goat", "good", "grin", "grip", "gust", "hail", "hair", "hawk", "haze", "heal", "heap", "heat", "heel", "here", "hide", "hike", "hire", "hive", "hole", "home", "hood", "hook", "hoop", "hope", "hose", "host", "hour", "hymn", "idea", "inch", "itch", "jade", "jeep", "joke", "june", "just", "keen", "keep", "kite", "lace", "lake", "lane", "last", "late", "lawn", "leaf", "leak", "lean", "leap", "life", "like", "lime", "line", "list", "load", "loaf", "loan", "lone", "look", "loop", "lore", "lose", "loud", "made", "mail", "main", "make", "mask", "mast", "mate", "meal", "mean", "meat", "meet", "mesh", "mice", "mile", "mine", "mist", "mode", "mood", "moon", "most", "much", "must", "myth", "nail", "name", "near", "neat", "need", "nest", "news", "nice", "nine", "node", "none", "noon", "nose", "note", "oath", "page", "pain", "pair", "pale", "past", "path", "peak", "peel", "peer", "pest", "pier", "pile", "pine", "pipe", "plan", "play", "plea", "plot", "plug", "plum", "plus", "poem", "poke", "pole", "pool", "poor", "pose", "post", "pour", "push", "quiz", "race", "rage", "rail", "rain", "rake", "rare", "rate", "real", "reef", "rest", "rice", "rich", "ride", "ripe", "rise", "risk", "road", "roam", "roar", "robe", "rode", "role", "roof", "room", "root", "rope", "rose", "rude", "rule", "rush", "rust", "safe", "sail", "same", "save", "seal", "seam", "seat", "seed", "seek", "seem", "seen", "shed", "ship", "shop", "shot", "shut", "side", "site", "size", "skin", "skip", "slam", "slap", "slid", "slim", "slip", "slot", "slow", "snap", "snow", "soak", "soap", "soil", "sole", "soon", "sore", "soul", "soup", "sour", "spin", "spot", "spun", "stag", "star", "stay", "stem", "step", "stew", "stir", "stop", "such", "suit", "swan", "swap", "sway", "swim", "tail", "take", "tale", "tame", "tape", "task", "team", "test", "than", "that", "them", "then", "this", "tide", "tile", "time", "tire", "toad", "tone", "took", "tool", "tore", "tour", "tram", "trap", "tray", "tree", "trim", "trip", "true", "tube", "tune", "twin", "type", "vain", "vase", "vast", "vest", "vine", "void", "wage", "wait", "wake", "wash", "wasp", "wave", "weak", "wear", "weed", "week", "weep", "west", "what", "when", "whip", "wide", "wife", "wine", "wipe", "wire", "wise", "wish", "with", "wood", "wool", "wore", "year", "yell", "zone", "zoom", "veil", "vein", "cent", "germ", "urge"],
+    hard: ["comb", "come", "debt", "done", "edge", "give", "gnaw", "gone", "half", "high", "knee", "knot", "lamb", "limb", "love", "numb", "palm", "sign", "some", "sure", "talk", "tomb", "walk", "were", "womb", "wrap"],
+  },
+  5: {
+    easy: ["baker", "basil", "basin", "cabin", "camel", "cargo", "carve", "comic", "cover", "curve", "diary", "dozen", "enter", "event", "every", "exact", "false", "final", "focus", "forum", "habit", "horse", "hotel", "human", "inbox", "index", "inner", "input", "joker", "juror", "label", "laser", "later", "lemon", "level", "limit", "lunar", "major", "medal", "media", "melon", "merit", "metal", "minor", "minus", "mixer", "model", "moral", "motor", "music", "never", "novel", "nurse", "occur", "offer", "onion", "opera", "order", "panel", "panic", "paper", "pedal", "piano", "pilot", "pizza", "polar", "pupil", "radar", "radio", "rapid", "ratio", "rebel", "refer", "relax", "reset", "rider", "rival", "river", "robot", "ruler", "rural", "salad", "scarf", "scary", "serve", "seven", "solar", "solid", "solve", "super", "tempo", "tense", "tiger", "timer", "tired", "token", "tonal", "topic", "total", "toxic", "tulip", "tunic", "under", "union", "upper", "urban", "usual", "valid", "vegan", "verse", "video", "viral", "virus", "vital", "vivid", "vocal", "wagon", "water", "widen", "worse", "woven"],
+    medium: ["aisle", "apple", "aunty", "beach", "beard", "beast", "below", "bench", "berry", "birth", "black", "blade", "blame", "blank", "blast", "blaze", "bleed", "blend", "bless", "blind", "block", "blood", "bloom", "board", "boast", "brain", "brave", "bread", "break", "breed", "brick", "bride", "brief", "bring", "broad", "broke", "brown", "brush", "bunch", "burst", "candy", "catch", "cause", "chair", "charm", "chase", "cheap", "check", "cheek", "cheer", "chess", "chest", "chick", "chief", "child", "chill", "chore", "chunk", "clash", "class", "clean", "clerk", "cliff", "cling", "clock", "cloth", "cloud", "clown", "coach", "coast", "couch", "count", "court", "crack", "craft", "cramp", "crash", "crawl", "cream", "crest", "cried", "crisp", "crook", "cross", "crowd", "crown", "crush", "daily", "dairy", "daisy", "death", "delay", "depth", "dirty", "draft", "drain", "drama", "drank", "dream", "dress", "dried", "drift", "drink", "drive", "drove", "drown", "dwell", "eager", "eagle", "early", "earth", "empty", "enjoy", "equal", "erase", "exist", "fable", "faith", "fancy", "field", "fifth", "fifty", "first", "flame", "flash", "fleet", "flesh", "fling", "float", "flock", "flood", "floor", "flour", "fluid", "flush", "forth", "forty", "found", "frame", "fresh", "fried", "fries", "front", "frost", "fruit", "funny", "gauge", "gauze", "glare", "glass", "gleam", "glide", "globe", "gloom", "glory", "glove", "grace", "grade", "grand", "graph", "grasp", "grass", "great", "greed", "green", "greet", "grief", "grill", "grind", "groom", "group", "grove", "growl", "grown", "guide", "hairy", "happy", "hardy", "harsh", "haste", "hatch", "hobby", "honey", "house", "hunch", "hurry", "ideal", "image", "issue", "jelly", "joint", "jolly", "juice", "kayak", "layer", "learn", "least", "leave", "loose", "lower", "loyal", "lucky", "lunch", "lyric", "maple", "march", "match", "mayor", "meant", "mercy", "month", "mount", "mouse", "mouth", "movie", "nasty", "newly", "niece", "noble", "noise", "north", "nylon", "obese", "ocean", "other", "outer", "owner", "oxide", "paint", "party", "pause", "peace", "peach", "pearl", "penny", "perch", "phase", "photo", "piece", "pinch", "pitch", "place", "plain", "plane", "plant", "plate", "point", "poise", "porch", "pouch", "pound", "power", "press", "price", "pride", "prime", "print", "prior", "prize", "proof", "proud", "punch", "quart", "queen", "query", "quest", "quick", "quiet", "quilt", "quite", "raise", "rally", "ranch", "reach", "react", "ready", "relay", "reply", "retro", "roast", "rocky", "round", "route", "royal", "rugby", "sauce", "scale", "scare", "scene", "scoop", "scout", "screw", "scrub", "shack", "shade", "shake", "shall", "shame", "shape", "share", "shark", "sharp", "shave", "shawl", "sheen", "sheep", "sheet", "shelf", "shift", "shine", "shirt", "shock", "shoot", "shore", "short", "shout", "shove", "shown", "shrug", "siege", "silly", "sixty", "skate", "skirt", "skull", "slate", "sleek", "sleep", "sleet", "slice", "slide", "slime", "sling", "slope", "small", "smart", "smash", "smell", "smile", "smoke", "snack", "snail", "sneak", "sniff", "sorry", "sound", "south", "space", "spare", "spark", "speak", "speed", "spell", "spend", "spent", "spike", "spill", "spine", "split", "spoil", "spoke", "spoon", "sport", "spout", "spray", "spree", "spurt", "squad", "stack", "staff", "stage", "stain", "stair", "stake", "stale", "stall", "stamp", "stand", "stank", "stare", "stark", "start", "state", "steak", "steal", "steam", "steel", "steep", "steer", "stick", "stiff", "still", "sting", "stock", "stomp", "stone", "stood", "stool", "store", "storm", "story", "stout", "stove", "strap", "straw", "strip", "strum", "study", "stuff", "stump", "stung", "stunt", "style", "suite", "sunny", "swamp", "swear", "sweat", "sweep", "sweet", "swept", "swift", "swing", "swirl", "swoop", "table", "taste", "teach", "tease", "tenth", "thank", "theft", "theme", "thick", "thief", "thing", "think", "third", "thorn", "those", "three", "threw", "throb", "throw", "thump", "toast", "today", "tooth", "torch", "touch", "tower", "trace", "track", "tract", "trade", "trail", "train", "trait", "trash", "tread", "treat", "trend", "trial", "tribe", "trick", "tried", "tries", "truck", "trunk", "trust", "truth", "twist", "unite", "untie", "usage", "value", "vault", "venue", "voice", "vowel", "waist", "waltz", "watch", "weary", "weave", "whale", "wharf", "wheat", "wheel", "which", "while", "whine", "whirl", "white", "whole", "whose", "width", "witch", "world", "worry", "worst", "worth", "yield", "young", "youth", "civic", "dance", "force", "forge", "giant", "lance", "large", "logic", "magic", "range", "rigid", "scent", "since", "surge"],
+    hard: ["build", "built", "chalk", "climb", "cough", "could", "crumb", "doubt", "dough", "eight", "fight", "fudge", "ghost", "gnarl", "gnash", "gnome", "guard", "guess", "guest", "jumbo", "knack", "knead", "kneel", "knelt", "knife", "knock", "knoll", "known", "laugh", "light", "lodge", "might", "neigh", "night", "prove", "psalm", "realm", "reign", "rhyme", "ridge", "right", "rough", "sight", "stalk", "thumb", "tight", "tough", "upset", "wedge", "weigh", "women", "would", "wreck", "wring", "wrist", "write", "wrong", "wrote", "weird", "sugar", "sword", "yacht"],
+  },
+};
+
+const REGIONAL_WORDS = {
+  us: {
+    3: {
+      easy: ["mom"],
+      medium: [],
+      hard: [],
+    },
+    4: {
+      easy: ["mold"],
+      medium: ["plow"],
+      hard: [],
+    },
+    5: {
+      easy: ["meter", "labor", "rumor", "tumor", "vapor"],
+      medium: [],
+      hard: [],
+    },
+  },
+  uk: {
+    3: {
+      easy: ["mum"],
+      medium: [],
+      hard: [],
+    },
+    4: {
+      easy: [],
+      medium: [],
+      hard: [],
+    },
+    5: {
+      easy: ["metre"],
+      medium: ["mould"],
+      hard: [],
+    },
+  },
+};
+
+// ---------------------------------------------------------------------
+// 2) DEV-TIME WORD DATABASE VALIDATION
+//    Runs once on load. Logs clearly to console; never blocks the app.
+// ---------------------------------------------------------------------
+(function validateWordDatabase(){
+  const errors = [];
+  const LENGTHS = [3,4,5];
+  const DIFFS = ["easy","medium","hard"];
+
+  function checkWord(w, L, d, source){
+    if (typeof w !== "string") { errors.push(`${source}[${L}][${d}]: non-string entry`); return; }
+    if (/\s/.test(w)) errors.push(`${source}[${L}][${d}]: "${w}" contains whitespace`);
+    if (!/^[a-z]+$/.test(w)) errors.push(`${source}[${L}][${d}]: "${w}" contains punctuation or non-alphabetic characters`);
+    if (w.length !== L) errors.push(`${source}[${L}][${d}]: "${w}" is ${w.length} letters, filed under length ${L}`);
+  }
+
+  for (const L of LENGTHS){
+    if (!BASE_WORDS[L]) { errors.push(`BASE_WORDS missing length ${L}`); continue; }
+    for (const d of DIFFS){
+      if (!BASE_WORDS[L][d]) { errors.push(`BASE_WORDS[${L}] missing "${d}" array`); continue; }
+      const words = BASE_WORDS[L][d];
+      if (words.length === 0) errors.push(`BASE_WORDS[${L}][${d}] is empty`);
+      const seen = new Set();
+      for (const w of words){
+        checkWord(w, L, d, "BASE_WORDS");
+        if (seen.has(w)) errors.push(`BASE_WORDS[${L}][${d}]: duplicate "${w}"`);
+        seen.add(w);
+      }
+    }
+  }
+
+  for (const variant of Object.keys(REGIONAL_WORDS)){
+    for (const L of LENGTHS){
+      if (!REGIONAL_WORDS[variant][L]) continue;
+      for (const d of DIFFS){
+        const words = REGIONAL_WORDS[variant][L][d] || [];
+        const seen = new Set();
+        for (const w of words){
+          checkWord(w, L, d, `REGIONAL_WORDS.${variant}`);
+          if (seen.has(w)) errors.push(`REGIONAL_WORDS.${variant}[${L}][${d}]: duplicate "${w}"`);
+          seen.add(w);
+        }
+      }
+    }
+  }
+
+  if (errors.length){
+    console.error(`Word Blocks: ${errors.length} word-database issue(s) found:`);
+    errors.forEach(e => console.error(" -", e));
+  } else {
+    console.log("Word Blocks: word database validation passed.");
+  }
+})();
+
+// ---------------------------------------------------------------------
+// 3) WORD POOL HELPER (merges base + regional overlay for a variant)
+// ---------------------------------------------------------------------
+function getWordPool(length, difficulty, variant){
+  const base = (BASE_WORDS[length] && BASE_WORDS[length][difficulty]) || [];
+  const regional = (REGIONAL_WORDS[variant] && REGIONAL_WORDS[variant][length] && REGIONAL_WORDS[variant][length][difficulty]) || [];
+  return base.concat(regional);
+}
+
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+// ---------------------------------------------------------------------
+// 4) CUMULATIVE DIFFICULTY WEIGHTING
+//    Medium and Hard include earlier tiers for reinforcement, weighted
+//    so genuinely harder words still show up often enough to matter.
+// ---------------------------------------------------------------------
+const DIFFICULTY_WEIGHTS = {
+  easy:   [["easy", 1.0]],
+  medium: [["easy", 0.30], ["medium", 0.70]],
+  hard:   [["easy", 0.20], ["medium", 0.35], ["hard", 0.45]]
+};
+
+function pickWeightedTier(difficulty){
+  const weights = DIFFICULTY_WEIGHTS[difficulty];
+  const r = Math.random();
+  let cumulative = 0;
+  for (const [tier, weight] of weights){
+    cumulative += weight;
+    if (r <= cumulative) return tier;
+  }
+  return weights[weights.length - 1][0];
+}
+
+// ---------------------------------------------------------------------
+// 5) RECENT-HISTORY (NO-REPEAT) TRACKING
+//    Only the main displayed word counts -- not description examples.
+//    Stored locally only; nothing is ever sent anywhere.
+// ---------------------------------------------------------------------
+const HISTORY_KEY = "wordblocks_recent_history";
+const HISTORY_LIMIT = 25;
+
+function loadHistory(){
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+function saveHistory(history){
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); }
+  catch(e) { /* localStorage unavailable -- non-critical, fail silently */ }
+}
+function pushHistory(word){
+  let history = loadHistory();
+  history.push(word);
+  if (history.length > HISTORY_LIMIT) history = history.slice(history.length - HISTORY_LIMIT);
+  saveHistory(history);
+}
+
+// ---------------------------------------------------------------------
+// 6) REAL-WORD GENERATION (cumulative tiers + regional overlay + no-repeat)
+// ---------------------------------------------------------------------
+function generateRealWord(length, difficulty, variant, excludeSet){
+  for (let attempt = 0; attempt < 100; attempt++){
+    const tier = pickWeightedTier(difficulty);
+    const pool = getWordPool(length, tier, variant);
+    if (pool.length === 0) continue;
+    const candidate = pick(pool);
+    if (!excludeSet.has(candidate)) return candidate;
+  }
+  // Fallback if the pool is exhausted by exclusion (rare) -- ignore history once.
+  const tier = pickWeightedTier(difficulty);
+  const pool = getWordPool(length, tier, variant);
+  return pool.length ? pick(pool) : "";
+}
+
+// ---------------------------------------------------------------------
+// 7) PHONETIC (MADE-UP) WORD GENERATOR
+//    Same sound-pattern engine as before, now also cumulative and
+//    no-repeat aware for Sound-it-out mode.
+// ---------------------------------------------------------------------
+const VOWELS = ["a","e","i","o","u"];
+const SIMPLE_CONSONANTS = "bcdfghjklmnprstvw".split("");
+const BLENDS = ["bl","br","cl","cr","dr","fl","fr","gl","gr","pl","pr","sk","sl","sm","sn","sp","st","sw","tr","tw"];
+const DIGRAPHS = ["ch","sh","th","wh","ph"];
+const TRICKY_CONSONANTS = "bcdfghjklmnpqrstvwxyz".split("");
+
+const DIFFICULTY_CONFIG = {
+  easy:   { start: SIMPLE_CONSONANTS, end: SIMPLE_CONSONANTS },
+  medium: { start: SIMPLE_CONSONANTS.concat(DIGRAPHS), end: SIMPLE_CONSONANTS },
+  hard:   { start: TRICKY_CONSONANTS.concat(BLENDS, DIGRAPHS), end: TRICKY_CONSONANTS.concat(BLENDS) }
+};
+
+function buildPhoneticWord(targetLength, tier){
+  const cfg = DIFFICULTY_CONFIG[tier];
+  for(let attempt=0; attempt<200; attempt++){
+    let pieces = [];
+    let consonantTurn = true;
+    let len = 0;
+    while(len < targetLength){
+      let chunk;
+      if(consonantTurn){
+        chunk = pick(pieces.length === 0 ? cfg.start : cfg.end);
+      } else {
+        chunk = pick(VOWELS);
+      }
+      pieces.push(chunk);
+      len += chunk.length;
+      consonantTurn = !consonantTurn;
+    }
+    const word = pieces.join("");
+    if(word.length === targetLength) return word;
+  }
+  let w = "";
+  while(w.length < targetLength) w += pick(VOWELS);
+  return w.slice(0, targetLength);
+}
+
+function generatePhoneticWord(length, difficulty, excludeSet){
+  for (let attempt = 0; attempt < 100; attempt++){
+    const tier = pickWeightedTier(difficulty);
+    const candidate = buildPhoneticWord(length, tier);
+    if (!excludeSet.has(candidate)) return candidate;
+  }
+  const tier = pickWeightedTier(difficulty);
+  return buildPhoneticWord(length, tier);
+}
+
+// ---------------------------------------------------------------------
+// 8) UNIFIED ENTRY POINTS
+// ---------------------------------------------------------------------
+function generateWord(length, type, difficulty, variant, excludeSet){
+  excludeSet = excludeSet || new Set();
+  if (type === "real"){
+    return generateRealWord(length, difficulty, variant, excludeSet);
+  }
+  return generatePhoneticWord(length, difficulty, excludeSet);
+}
+
+// Pure-tier examples for the description box: always shows the specific
+// patterns of the SELECTED tier (not the cumulative blend used in actual
+// play), so "Hard" always demonstrates hard patterns, not random Easy words.
+function generatePureTierExamples(length, type, difficulty, variant, n){
+  const examples = new Set();
+  let attempts = 0;
+  while (examples.size < n && attempts < 50){
+    let candidate;
+    if (type === "real"){
+      const pool = getWordPool(length, difficulty, variant);
+      if (pool.length === 0) break;
+      candidate = pick(pool);
+    } else {
+      candidate = buildPhoneticWord(length, difficulty);
+    }
+    examples.add(candidate);
+    attempts++;
+  }
+  return [...examples];
+}
+
+// ---------------------------------------------------------------------
+// 9) VARIANT (UK/AU vs US) PERSISTENCE
+// ---------------------------------------------------------------------
+const VARIANT_KEY = "wordblocks_variant";
+function loadVariant(){
+  try { return localStorage.getItem(VARIANT_KEY) || "uk"; }
+  catch(e) { return "uk"; }
+}
+function saveVariant(v){
+  try { localStorage.setItem(VARIANT_KEY, v); }
+  catch(e) { /* ignore */ }
+}
+
+// ---------------------------------------------------------------------
+// 10) UI STATE & DESCRIPTIONS
+// ---------------------------------------------------------------------
+let state = { letters: 3, type: "real", difficulty: "easy", variant: loadVariant() };
+
+const DIFFICULTY_RULES = {
+  3: {
+    easy: "<b>Easy:</b> the most basic pattern — one consonant, one vowel, one consonant (CVC), nothing else.",
+    medium: "<b>Medium:</b> a blend or long-vowel sound squeezed into just 3 letters — a starting blend (fl, sp, sk) or a vowel pair (ee, oa, oy). <i>Also includes Easy words for continued practice, reinforcement and fluency.</i>",
+    hard: "<b>Hard:</b> silent letters, irregular spelling, or unpredictable pronunciation — the trickiest short words in English. <i>Also includes Easy and Medium words for continued practice, reinforcement and fluency.</i>"
+  },
+  4: {
+    easy: "<b>Easy:</b> still simple sounds, just one letter longer — usually an extra ending consonant, no blends or letter teams yet.",
+    medium: "<b>Medium:</b> a consonant blend or digraph (bl, st, ch, sh) at the start or end, a vowel pair (ee, oo, ai), or silent/magic-e (cake, hope). <i>Also includes Easy words for continued practice, reinforcement and fluency.</i>",
+    hard: "<b>Hard:</b> silent letters (kn, wr, mb, gh) and irregular spelling patterns that don't sound like they're written. <i>Also includes Easy and Medium words for continued practice, reinforcement and fluency.</i>"
+  },
+  5: {
+    easy: "<b>Easy:</b> longer, often two syllables, but each part still uses simple single consonants and vowels — no blends.",
+    medium: "<b>Medium:</b> the same blends, digraphs and vowel teams as shorter words, plus magic-e and soft c/g sounds (dance, magic). <i>Also includes Easy words for continued practice, reinforcement and fluency.</i>",
+    hard: "<b>Hard:</b> silent letters and irregular vowel patterns carried into longer words — trickiest tier overall. <i>Also includes Easy and Medium words for continued practice, reinforcement and fluency.</i>"
+  }
+};
+
+const diffDescEl = document.getElementById("diffDesc");
+
+function updateDiffDesc(){
+  const letters = parseInt(state.letters, 10);
+  const examples = generatePureTierExamples(letters, state.type, state.difficulty, state.variant, 3);
+  diffDescEl.innerHTML = DIFFICULTY_RULES[letters][state.difficulty] +
+    " <i>e.g. " + examples.join(", ") + "</i>";
+}
+
+function wireSeg(id, key){
+  const seg = document.getElementById(id);
+  seg.querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      seg.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      state[key] = btn.dataset.val;
+      updateDiffDesc();
+    });
+  });
+}
+wireSeg("lettersSeg","letters");
+wireSeg("typeSeg","type");
+wireSeg("diffSeg","difficulty");
+
+// Small flag toggle: tap cycles between UK/AU and US, no label taking up space
+const VARIANT_FLAGS = { uk: "🇬🇧🇦🇺", us: "🇺🇸" };
+const variantToggleBtn = document.getElementById("variantToggle");
+
+function renderVariantToggle(){
+  variantToggleBtn.textContent = VARIANT_FLAGS[state.variant];
+  variantToggleBtn.title = state.variant === "uk" ? "UK / Australian spelling (tap to switch)" : "US spelling (tap to switch)";
+}
+variantToggleBtn.addEventListener("click", ()=>{
+  state.variant = state.variant === "uk" ? "us" : "uk";
+  saveVariant(state.variant);
+  renderVariantToggle();
+  updateDiffDesc();
+});
+renderVariantToggle();
+
+updateDiffDesc();
+
+const stage = document.getElementById("stage");
+
+function renderWord(word, type){
+  stage.innerHTML = "";
+  [...word].forEach((letter, i)=>{
+    const tile = document.createElement("div");
+    tile.className = "tile " + (type === "real" ? "real" : "phonetic");
+    tile.textContent = letter;
+    tile.style.animationDelay = (i*0.06)+"s";
+    stage.appendChild(tile);
+  });
+}
+
+document.getElementById("goBtn").addEventListener("click", ()=>{
+  const letters = parseInt(state.letters, 10);
+  const excludeSet = new Set(loadHistory());
+  const word = generateWord(letters, state.type, state.difficulty, state.variant, excludeSet);
+  renderWord(word, state.type);
+  pushHistory(word);
+});
+</script>
+<script>
+  // PWA install prompt + service worker registration.
+  // The service worker itself lives in /sw.js and is pasted into GitHub separately.
+  let deferredInstallPrompt = null;
+  const installBtn = document.getElementById("installBtn");
+  const appFooter = document.getElementById("appFooter");
+
+  function isStandalone(){
+    return window.matchMedia("(display-mode: standalone)").matches ||
+           window.navigator.standalone === true;
+  }
+
+  if (isStandalone() && appFooter) {
+    appFooter.textContent = "Works offline";
+  }
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    if (installBtn) installBtn.hidden = false;
+    if (appFooter) appFooter.textContent = "Works offline · installable";
+  });
+
+  if (installBtn) {
+    installBtn.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      installBtn.hidden = true;
+    });
+  }
+
+  window.addEventListener("appinstalled", () => {
+    deferredInstallPrompt = null;
+    if (installBtn) installBtn.hidden = true;
+    if (appFooter) appFooter.textContent = "Works offline";
+  });
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch((err) => {
+        console.error("Service worker registration failed:", err);
+      });
+    });
+  }
+</script>
+</body>
+</html>
