@@ -43,23 +43,29 @@ Pick a level → generate a word → sound it out → repeat.
 
 ---
 
-👨‍👩‍👧 Designed for shared learning
+👨‍👩‍👧 Designed to learn together
 
-Word Blocks is intended to be used with a parent, caregiver, teacher or other adult nearby.
+Word Blocks is designed to be shared with a child, not to monitor them.
 
-It is not designed to replace teaching or independently assess a child.
+A parent, caregiver, teacher or other adult provides the interaction, encouragement and help. The app simply provides an appropriate word to practise.
 
-Instead, it gives the adult a quick supply of words appropriate to the selected level without having to continually think of new examples.
+Word Blocks does not try to replace that interaction with automated voices, scoring systems or artificial feedback.
 
-This makes it useful for short reading sessions:
+There is deliberately no:
 
-- At home
-- On public transport
-- While travelling
-- In waiting rooms
-- At cafés
-- Before bed
-- Anywhere you have a few spare minutes
+- Microphone access
+- Voice recording
+- Speech recognition
+- Pronunciation tracking
+- AI analysis of a child's voice
+- Voice profiles
+- Reading-performance tracking
+- Text-to-speech automatically solving the word
+- Synthetic voices repeatedly telling children things like "Good job!"
+
+Word Blocks provides the words. The adult provides the teaching.
+
+The aim is to create a free resource that an adult and child can use together, rather than an app that observes, records or evaluates the child.
 
 ---
 
@@ -165,10 +171,38 @@ There are deliberately no:
 - Tracking
 - Social features
 - In-app purchases
+- Microphone permissions
+- Voice recording
+- AI voice assessment
+- Automated praise loops
 
 The application has one job:
 
 Provide useful reading practice words quickly.
+
+It should be something you can open while sitting beside your child, practise a few words together, and put away again.
+
+No profile to maintain. No data to collect. No algorithm deciding whether the child performed well enough.
+
+---
+
+🔒 Privacy by design
+
+Word Blocks does not need to know who the child is.
+
+It does not need their:
+
+- Name
+- Age
+- Email address
+- Voice
+- Reading history
+- Location
+- Account information
+
+The app does not need to listen to a child in order to help them practise reading.
+
+Keeping Word Blocks simple means keeping children's data out of the application in the first place.
 
 ---
 
@@ -176,7 +210,7 @@ Provide useful reading practice words quickly.
 
 Word Blocks is open source so parents, teachers and developers can inspect it, improve it and adapt it.
 
-The project aims to remain a freely available educational tool.
+The project aims to remain a freely available educational resource that families can share and learn with together.
 
 Useful contributions could include:
 
@@ -256,7 +290,7 @@ You are free to use, modify and redistribute the project in accordance with the 
 
 ❤️ Why Word Blocks exists
 
-Reading practice doesn't always need another lesson, game or platform.
+Reading practice doesn't always need another lesson, game, algorithm or AI assistant.
 
 Sometimes you just need an appropriate word in front of a child and someone beside them saying:
 
